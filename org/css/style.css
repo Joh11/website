@@ -1,0 +1,10 @@
+body {
+    margin: 0 auto;
+    max-width: 800px;
+    background-color: #01304F;
+    color: #A1A6AA;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF;
+}
