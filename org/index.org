@@ -1,4 +1,4 @@
-#+TITLE: My static website with org-mode
+#+TITLE: My static website with org-mode TEST
 
 
 * Introduction
