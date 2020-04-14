@@ -18,3 +18,6 @@ And display equation test :
 \begin{equation*}
 i\hbar\frac{\partial \psi}{\partial t} =  \hat H  \psi\
 \end{equation*}
+
+* Test link
+[[file:about.org][This is a link]]
