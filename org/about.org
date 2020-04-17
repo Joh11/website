@@ -1,2 +1,17 @@
-#+TITLE: About me
+#+TITLE: About
 
+* About this website
+This is my personal website. Here, you should expect to find random
+blog posts about pretty much anything, most likely tech or science, as
+well as pictures of mountains and nature. 
+
+The main goal of this website is to provide me an alternative to
+social networks, completely free and extensible. 
+
+This website has been built with org-mode, you can find the source
+code on github, and a detailed explanation of my (WIP) setup here TODO
+add link. 
+
+* About me
+
+* GPG Key

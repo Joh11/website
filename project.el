@@ -38,5 +38,3 @@
 	 :publishing-function org-publish-attachment)
 
 	("org" :components ("org-notes" "org-static"))))
-
-(org-publish "org")

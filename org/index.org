@@ -1,6 +1,5 @@
 #+TITLE: My static website with org-mode
 
-
 * Introduction
 
 * Goals
