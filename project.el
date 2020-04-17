@@ -1,7 +1,15 @@
 (require 'ox-publish)
 
+;; Utility function
+(defun joh/get-string-from-file (path)
+  "Return PATH's file content as string."
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
+
 (setq joh/website/base-dir (concat default-directory "org/"))
 (setq joh/website/publish-dir default-directory)
+(setq joh/website/template-dir (concat default-directory "org/templates/"))
 
 (setq org-publish-project-alist
       `(("org-notes"
@@ -13,9 +21,12 @@
 
 	 ;; All the style stuff here
 	 :html-head ,(format "<link rel=\"stylesheet\" href=\"%scss/style.css\" type=\"text/css\"/>" joh/website/base-dir)
+
+	 :html-preamble ,(joh/get-string-from-file (concat joh/website/template-dir "preamble.html"))
+	 :html-postamble ,(joh/get-string-from-file (concat joh/website/template-dir "postamble.html"))
+	 
 	 :with-toc nil
-	 :section-numbers nil
-	 :html-postamble nil)
+	 :section-numbers nil)
 
 	("org-static"
 	 :base-directory ,joh/website/base-dir
@@ -25,3 +36,5 @@
 	 :publishing-function org-publish-attachment)
 
 	("org" :components ("org-notes" "org-static"))))
+
+(org-publish "org")
