@@ -1,10 +1,49 @@
+/* General stuff */
 body {
-    margin: 0 auto;
-    max-width: 800px;
+    margin: 0;
     background-color: #01304F;
     color: #A1A6AA;
 }
 
+#content {
+    margin: 0 auto;
+    max-width: 800px;
+}
+
 h1, h2, h3, h4, h5, h6 {
     color: #FFFFFF;
+}
+
+/* Preamble */
+header {
+    background-color: gray;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4em 0.7em;
+}
+
+#navigationTitle {
+}
+
+nav {
+    align-self: flex-end
+}
+
+nav ul {
+    margin: 0;
+    width: 100%;
+    display: flex;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0;
+    padding: 0em 0.5em;
+    list-style-type: none;
+}
+
+nav > ul > li > a {
+    color: #FFFFFF;
+    text-decoration: none;
 }
