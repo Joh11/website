@@ -17,14 +17,11 @@
 
   L.control.scale().addTo(map);
 
-  var gpx = document.getElementById('gpx').innerHTML.trim(); // URL to your GPX file or the GPX itself
+  var gpx = document.getElementById('gpx').innerHTML.trim(); // Trim to remove leading carriage return that breaks the xml parsing
 
   layer = omnivore.gpx.parse(gpx)
-  alert(layer);
   layer.addTo(map);
 
-  map.fitBounds(layer.getBounds());
-  
-  alert(gpx);
+  map.fitBounds(layer.getBounds());  
 </script>
 #+END_EXPORT
