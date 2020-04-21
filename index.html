@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- 2020-04-17 ven. 19:17 -->
+<!-- 2020-04-21 mar. 22:28 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My static website with org-mode</title>
 <meta name="generator" content="Org mode">
+<meta name="author" content="Johan Félisaz">
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -178,6 +179,14 @@
   /*]]>*/-->
 </style>
 <link rel="stylesheet" href="css/style.css" type="text/css"/>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -267,13 +276,13 @@ for the JavaScript code in this tag.
 <div id="content">
 <h1 class="title">My static website with org-mode</h1>
 
-<div id="outline-container-org3180302" class="outline-2">
-<h2 id="org3180302">Introduction</h2>
+<div id="outline-container-orge22ad8a" class="outline-2">
+<h2 id="orge22ad8a">Introduction</h2>
 </div>
 
-<div id="outline-container-orgee07363" class="outline-2">
-<h2 id="orgee07363">Goals</h2>
-<div class="outline-text-2" id="text-orgee07363">
+<div id="outline-container-orgbf5cd61" class="outline-2">
+<h2 id="orgbf5cd61">Goals</h2>
+<div class="outline-text-2" id="text-orgbf5cd61">
 <ul class="org-ul">
 <li>Having a nice and beautiful static website</li>
 <li>Use only org-mode to write new posts</li>
@@ -283,13 +292,13 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org4ee596f" class="outline-2">
-<h2 id="org4ee596f">State of the project</h2>
+<div id="outline-container-org068578b" class="outline-2">
+<h2 id="org068578b">State of the project</h2>
 </div>
 
-<div id="outline-container-org19a5745" class="outline-2">
-<h2 id="org19a5745">Test of equations in Mathjax</h2>
-<div class="outline-text-2" id="text-org19a5745">
+<div id="outline-container-org7509324" class="outline-2">
+<h2 id="org7509324">Test of equations in Mathjax</h2>
+<div class="outline-text-2" id="text-org7509324">
 <p>
 Inline equation test : \(i\hbar\frac{\partial \psi}{\partial t} =  \hat H  \psi\)
 And display equation test : 
@@ -301,9 +310,9 @@ i\hbar\frac{\partial \psi}{\partial t} =  \hat H  \psi\
 </div>
 </div>
 
-<div id="outline-container-orgf81a301" class="outline-2">
-<h2 id="orgf81a301">Test link</h2>
-<div class="outline-text-2" id="text-orgf81a301">
+<div id="outline-container-orge9ccbd6" class="outline-2">
+<h2 id="orge9ccbd6">Test link</h2>
+<div class="outline-text-2" id="text-orge9ccbd6">
 <p>
 <a href="about.html">This is a link</a>
 </p>

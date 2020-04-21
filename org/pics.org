@@ -1,3 +1,30 @@
 #+TITLE: My pictures
 
 * Recent pictures
+
+#+HTML: <script id="gpx" type="text/xml">
+#+INCLUDE: "parcours.gpx" export html
+#+HTML: </script>
+
+#+BEGIN_EXPORT html
+<div id="mapid" style="height: 800px"></div>
+
+<script type="text/javascript">
+  var map = L.map('mapid').setView([51.505, -0.09], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+  maxZoom: 19}).addTo(map)
+
+  L.control.scale().addTo(map);
+
+  var gpx = document.getElementById('gpx').innerHTML.trim(); // URL to your GPX file or the GPX itself
+
+  layer = omnivore.gpx.parse(gpx)
+  alert(layer);
+  layer.addTo(map);
+
+  map.fitBounds(layer.getBounds());
+  
+  alert(gpx);
+</script>
+#+END_EXPORT

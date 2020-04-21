@@ -22,7 +22,7 @@
 	 ;; All the style stuff here
 	 :html-doctype "html5"
 	 
-	 :html-head "<link rel=\"stylesheet\" href=\"css/style.css\" type=\"text/css\"/>"
+	 :html-head ,(joh/get-string-from-file (concat joh/website/template-dir "head.html"))
 
 	 :html-preamble ,(joh/get-string-from-file (concat joh/website/template-dir "preamble.html"))
 	 :html-postamble ,(joh/get-string-from-file (concat joh/website/template-dir "postamble.html"))
