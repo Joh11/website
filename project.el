@@ -47,7 +47,7 @@ inside a script tag, and insert below a map"
   "Count the number of occurences of CHAR in the given STRING. "
   (loop for c across string when (equal c char) sum 1))
 
-(defun joh/org-pages-subproject (dirname)
+(defun joh/org-pages-subproject (dirname &rest extra-options)
   "Return the right project alist to make a subproject of
 org-pages. 
 
@@ -75,11 +75,16 @@ the main directory ; it must then be an empty string. "
        :html-postamble ,(joh/get-string-from-file (concat joh/website/template-dir "postamble.html"))
        
        :with-toc nil
-       :section-numbers nil)))
+       :section-numbers nil
+
+       ,@extra-options)))
 
 (setq org-publish-project-alist
       `(,(joh/org-pages-subproject "")
-	,(joh/org-pages-subproject "blog/")
+	,(joh/org-pages-subproject "blog/"
+				   :auto-sitemap t
+				   :sitemap-title "All posts"
+				   :sitemap-filename "posts.org")
 
 	("org-static"
 	 :base-directory ,joh/website/static-dir

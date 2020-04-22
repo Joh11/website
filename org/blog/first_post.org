@@ -1,4 +1,217 @@
-#+TITLE: The first post of my blog
-#+DATE: <2020-04-17 ven.>
+#+TITLE: GPX integration and sloppy maps in Org-mode
+#+DATE: <2020-04-22 mer.>
 
+* Motivation
+One of the goal of my personal website will be to keep track and share
+posts of hikes I did. For this, I initially had in mine a simple org
+file with a few images in it. However, I got really excited about the
+idea of being able to display a sloppy map of the itinerary I
+took. This seemed like a nice little project to level up my Emacs and
+org-mode skills, while providing me with a nice way of displaying maps
+on my website. 
 
+* Demo
+Imagine that you'd only have to type one line in org mode: 
+
+#+BEGIN_SRC emacs-lisp
+  ,#+INCLUDE: "parcours.gpx" export gpx
+#+END_SRC
+
+To get a nice and shiny map like this :
+#+INCLUDE: "parcours.gpx" export gpx
+
+This is exactely what I achieved, using the javascript library Leaflet
+and the beautiful OpenStreetMap data.
+
+* Setup
+** First step : generate a GPX file
+A GPX (/GPS Exchange format/) file is used to store waypoints or
+tracks. It can be generated with various ways. Here, I used an online
+tool to draw a track and export it ([[https://www.calculitineraires.fr/][this one]], in French, but of course
+there are many others out there). 
+
+You should now have a more or less big GPX file, with plenty of GPS
+coordinates stored in XML inside. Put this in the same folder as the
+org file for simplicity. 
+
+** JS and HTML
+First, one has to link to the Leaflet library and its plugin for
+various GPS formats handling (including GPX), called omnivore. There
+are three tags to add to the head section of your HTML export : a CSS
+sheet for Leaflet, and the scripts for Leaflet and omnivore. For the
+record I let these lines here, though you should probably refer to the
+installation section of their respective websites. 
+
+#+BEGIN_SRC html
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+	integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+	crossorigin=""/>
+
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+	  integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+	  crossorigin=""></script>
+
+  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js"></script>
+#+END_SRC
+
+Now one has to create a template for the maps. In our case, we're
+going to bundle three things into our map:
+- the GPX data
+- the map itself
+- the script to load and display the track. 
+
+The entire code can be found here: 
+#+BEGIN_SRC html
+  <div class="map-section">
+
+    <script class="gpx" type="text/xml">
+      %s
+    </script>
+
+    <div class="map">
+    </div>
+
+    <script type="text/javascript">
+      var map = L.map(document.currentScript.parentElement.children[1]).setView([51.505, -0.09], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+	  maxZoom: 19}).addTo(map)
+
+      L.control.scale().addTo(map);
+
+      // Trim to remove leading carriage return that breaks the xml parsing
+      var gpx = document.currentScript.parentElement.children[0].innerHTML.trim()
+
+      layer = omnivore.gpx.parse(gpx)
+      layer.addTo(map);
+
+      map.fitBounds(layer.getBounds());  
+      </script>
+
+  </div>
+#+END_SRC
+
+Lets break this down into more understandable pieces. First, the
+exterior div is used to encapsulate everything nicely. Then, the GPX
+data is put inside a <script> tag, with the "text/xml" type, as GPX
+belongs to the XML family. The %s will be useful later, as we're going
+to use the elisp format function to plug the GPX data inside. 
+
+The usual way of doing this seem to be using AJAX or similar to load
+the GPX data in a second pass. However, I wanted something simple, and
+that stayed in the spirit of a static website, with self-contained
+pages (almost, as the Javascript has to be loaded from the Web of
+course). 
+
+Another important point, is that here it is assumed that the GPX is
+safe : it would be pretty easy to inject malicious JS with such a way
+of creating the HTML page. However, this is not a problem as the use
+case of this is not a dynamic website where users can upload their own
+untrusted GPX files, but rather a simple and hacky static blog where
+the author individually put every GPX file himself. 
+
+The next div tag is the one where the sloppy map is going to be
+inserted by Leaflet. An important thing is that its height has to be
+set, either using a style attribute, or putting a snippet like this in
+your CSS files : 
+
+#+BEGIN_SRC css
+  .map {
+      height: 800px
+  }
+#+END_SRC
+
+Finally, the big one, the javascript. First, a map is created using
+the L.map constructor. It takes either the id of the map div, or the
+corresponding element object. I wanted to keep the possibility of
+having several maps in a single page so a fixed id could not work, and
+I did not want to bother using gensym everywhere. The map element is
+thus found by navigating in the DOM. 
+
+The next two lines are here to load a tile set, and display a scale in
+the bottom left part of the map. 
+
+Similarly, the GPX data is retrieved using DOM navigation, and trimmed
+as the leading newlines break the XML parsing. Finally, a new layer is
+built and displayed from the GPX using omnivore, and the map is
+centered and scaled accordingly. 
+
+** Lisp, lisp everywhere
+Now the map is fully functional. We just have to integrate it nicely
+in org-mode. To do this, lets understand correctly what does this line
+exactely means: 
+#+BEGIN_SRC org
+  ,#+INCLUDE: "parcours.gpx" export gpx
+#+END_SRC
+
+When org mode parses it, it is expanded as such: 
+#+BEGIN_SRC org
+  ,#+BEGIN_EXPORT gpx
+  all of the GPX data here ...
+  ,#+END_EXPORT
+#+END_SRC
+
+We thus have to modify the way export blocks are exported in HTML
+replace every GPX block with the HTML map template we did earlier. I
+could not find a way to do it with hooks or the exporting filter
+system : we thus have to create another backend from the HTML one, and
+override only the export block function. This is simply done with this
+snippet : 
+#+BEGIN_SRC emacs-lisp
+  (org-export-define-derived-backend 'joh/html 'html
+    :translate-alist '((export-block . joh/export-block)))
+#+END_SRC
+
+Here, joh/export-block is our custom function to transcode export
+blocks. It has to expand our map html template if the export type is
+GPX, and delegate to the default export behavior otherwise. 
+
+#+BEGIN_SRC emacs-lisp
+  (defun joh/export-block (export-block contents info)
+    "If the export block type is gpx, then put the html block
+  inside a script tag, and insert below a map"
+    (if (string= (org-element-property :type export-block) "GPX")
+	(format (joh/get-string-from-file "map.html")
+		(org-remove-indentation (org-element-property :value export-block)))
+      (org-html-export-block export-block contents info)))
+#+END_SRC
+
+The joh/get-string-from file (see definition below) function is used
+to load the HTML template as string. It goes through the format
+function, to expand the %s with the GPX data. 
+
+#+BEGIN_SRC emacs-lisp
+  (defun joh/get-string-from-file (path)
+    "Return PATH's file content as string."
+    (with-temp-buffer
+      (insert-file-contents path)
+      (buffer-string)))
+#+END_SRC
+
+Finally, one can change the backend of org-publish like this: 
+#+BEGIN_SRC emacs-lisp
+  (defun joh/publish-to-html (plist filename pub-dir)
+    "Modified version of org-html-publish-to-html. "
+    (org-publish-org-to 'joh/html filename
+			(concat "." (or (plist-get plist :html-extension)
+					org-html-extension
+					"html"))
+			plist pub-dir))
+
+  (setq org-publish-project-alist
+	'("org"
+	  :publishing-function joh/publish-to-html
+	  ;; All the other standard options here
+	  ))
+#+END_SRC
+
+* Conclusion
+This was a fun and interesting project to work on. I am still amazed
+with the power of Emacs and org-mode. Furthermore, I realized the
+huge potential of Lisp editing in Emacs ; especially, the jump to
+definition command is perfect to navigate inside the relatively big
+code base of org-mode. 
+
+If you want to see a practical use of this, please visit the [[https://github.com/Joh11/website][git repo]]
+for my website. It is still a heavy WIP but it should be enough to get
+started. 
