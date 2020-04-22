@@ -35,6 +35,8 @@ inside a script tag, and insert below a map"
 		      plist pub-dir))
 
 ;; Resolve the subdirectory broken links problem
+(setq *joh/publish-draft-p* nil)
+
 (defun joh/level-to-path (level)
   "Return the right number of .. for the given LEVEL"
   (if (= level 0)
@@ -45,14 +47,12 @@ inside a script tag, and insert below a map"
   "Count the number of occurences of CHAR in the given STRING. "
   (loop for c across string when (equal c char) sum 1))
 
-(defun joh/org-pages-subproject (dirname &optional static-p)
+(defun joh/org-pages-subproject (dirname)
   "Return the right project alist to make a subproject of
 org-pages. 
 
 DIRNAME must end with a slash, unless it represents
-the main directory ; it must then be an empty string. 
-
-If STATIC-P is set to t, then a second project is also generated for the static counterpart."
+the main directory ; it must then be an empty string. "
   (let* ((level (joh/count-occurences dirname ?/))
 	 (prefix (joh/level-to-path level))
 	 (pretty-name (if (= 0 (length dirname))
@@ -61,7 +61,7 @@ If STATIC-P is set to t, then a second project is also generated for the static 
     `(,pretty-name
        :base-directory ,(concat joh/website/base-dir dirname)
        :base-extension "org"
-       :exclude "^_"
+       ,@(if *joh/publish-draft-p* nil '(:exclude "^_"))
        :publishing-directory ,(concat joh/website/publish-dir dirname)
        :publishing-function joh/publish-to-html
 
@@ -77,8 +77,6 @@ If STATIC-P is set to t, then a second project is also generated for the static 
        :with-toc nil
        :section-numbers nil)))
 
-(joh/org-pages-subproject "blog/")
-
 (setq org-publish-project-alist
       `(,(joh/org-pages-subproject "")
 	,(joh/org-pages-subproject "blog/")
@@ -88,6 +86,4 @@ If STATIC-P is set to t, then a second project is also generated for the static 
 	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
 	 :publishing-directory ,joh/website/publish-dir
 	 :recursive t
-	 :publishing-function org-publish-attachment)
-
-	("org" :components ("org-pages" "org-static"))))
+	 :publishing-function org-publish-attachment)))
