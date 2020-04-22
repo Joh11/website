@@ -38,6 +38,7 @@ inside a script tag, and insert below a map"
       `(("org-notes"
 	 :base-directory ,joh/website/base-dir
 	 :base-extension "org"
+	 :exclude "^_" ;; drafts starting with underscore are skipped
 	 :publishing-directory ,joh/website/publish-dir
 	 :recursive t
 	 :publishing-function joh/publish-to-html
