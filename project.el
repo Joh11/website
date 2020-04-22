@@ -7,6 +7,26 @@
     (insert-file-contents path)
     (buffer-string)))
 
+(defun joh/export-block (export-block contents info)
+  "If the export block type is gpx, then put the html block
+inside a script tag, and insert below a map"
+  (if (string= (org-element-property :type export-block) "GPX")
+      (format (joh/get-string-from-file "templates/map.html")
+	      (org-remove-indentation (org-element-property :value export-block)))
+    ;; If not gpx then delegate to the default html export
+    (org-html-export-block export-block contents info)))
+
+(org-export-define-derived-backend 'joh/html 'html
+  :translate-alist '((export-block . joh/export-block)))
+
+(defun joh/publish-to-html (plist filename pub-dir)
+  "Modified version of org-html-publish-to-html. "
+  (org-publish-org-to 'joh/html filename
+		      (concat "." (or (plist-get plist :html-extension)
+				      org-html-extension
+				      "html"))
+		      plist pub-dir))
+
 (setq joh/website/base-dir (concat default-directory "org/"))
 (setq joh/website/publish-dir default-directory) ;; TODO fix the absolute path stuff 
 (setq joh/website/template-dir (concat default-directory "org/templates/"))
@@ -17,7 +37,7 @@
 	 :base-extension "org"
 	 :publishing-directory ,joh/website/publish-dir
 	 :recursive t
-	 :publishing-function org-html-publish-to-html
+	 :publishing-function joh/publish-to-html
 
 	 ;; All the style stuff here
 	 :html-doctype "html5"

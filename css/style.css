@@ -47,3 +47,7 @@ nav > ul > li > a {
     color: #FFFFFF;
     text-decoration: none;
 }
+
+.map {
+    height: 800px
+}
