@@ -28,7 +28,7 @@ inside a script tag, and insert below a map"
 		      plist pub-dir))
 
 (setq joh/website/base-dir (concat default-directory "org/"))
-(setq joh/website/publish-dir default-directory) ;; TODO fix the absolute path stuff 
+(setq joh/website/publish-dir (concat default-directory "public_html")) ;; TODO fix the absolute path stuff 
 (setq joh/website/template-dir (concat default-directory "org/templates/"))
 
 (setq org-publish-project-alist
