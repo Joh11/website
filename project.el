@@ -1,4 +1,5 @@
 (require 'ox-publish)
+(require 'cl)
 
 ;; Utility function
 (defun joh/get-string-from-file (path)
@@ -33,26 +34,54 @@ inside a script tag, and insert below a map"
 				      "html"))
 		      plist pub-dir))
 
+;; Resolve the subdirectory broken links problem
+(defun joh/level-to-path (level)
+  "Return the right number of .. for the given LEVEL"
+  (if (= level 0)
+      ""
+    (concat "../" (joh/level-to-path (- level 1)))))
+
+(defun joh/count-occurences (string char)
+  "Count the number of occurences of CHAR in the given STRING. "
+  (loop for c across string when (equal c char) sum 1))
+
+(defun joh/org-pages-subproject (dirname &optional static-p)
+  "Return the right project alist to make a subproject of
+org-pages. 
+
+DIRNAME must end with a slash, unless it represents
+the main directory ; it must then be an empty string. 
+
+If STATIC-P is set to t, then a second project is also generated for the static counterpart."
+  (let* ((level (joh/count-occurences dirname ?/))
+	 (prefix (joh/level-to-path level))
+	 (pretty-name (if (= 0 (length dirname))
+			  "org-pages"
+			(concat "org-pages-" (substring dirname 0 -1)))))
+    `(,pretty-name
+       :base-directory ,(concat joh/website/base-dir dirname)
+       :base-extension "org"
+       :exclude "^_"
+       :publishing-directory ,(concat joh/website/publish-dir dirname)
+       :publishing-function joh/publish-to-html
+
+       :html-doctype "html5"
+
+       :html-head ,(format (joh/get-string-from-file (concat joh/website/template-dir "head.html"))
+			   prefix)
+
+       :html-preamble ,(format (joh/get-string-from-file (concat joh/website/template-dir "preamble.html"))
+			       prefix prefix prefix prefix)
+       :html-postamble ,(joh/get-string-from-file (concat joh/website/template-dir "postamble.html"))
+       
+       :with-toc nil
+       :section-numbers nil)))
+
+(joh/org-pages-subproject "blog/")
 
 (setq org-publish-project-alist
-      `(("org-notes"
-	 :base-directory ,joh/website/base-dir
-	 :base-extension "org"
-	 :exclude "^_" ;; drafts starting with underscore are skipped
-	 :publishing-directory ,joh/website/publish-dir
-	 :recursive t
-	 :publishing-function joh/publish-to-html
-
-	 ;; All the style stuff here
-	 :html-doctype "html5"
-	 
-	 :html-head ,(joh/get-string-from-file (concat joh/website/template-dir "head.html"))
-
-	 :html-preamble ,(joh/get-string-from-file (concat joh/website/template-dir "preamble.html"))
-	 :html-postamble ,(joh/get-string-from-file (concat joh/website/template-dir "postamble.html"))
-	 
-	 :with-toc nil
-	 :section-numbers nil)
+      `(,(joh/org-pages-subproject "")
+	,(joh/org-pages-subproject "blog/")
 
 	("org-static"
 	 :base-directory ,joh/website/static-dir
@@ -61,4 +90,4 @@ inside a script tag, and insert below a map"
 	 :recursive t
 	 :publishing-function org-publish-attachment)
 
-	("org" :components ("org-notes" "org-static"))))
+	("org" :components ("org-pages" "org-static"))))
