@@ -28,8 +28,9 @@ inside a script tag, and insert below a map"
 		      plist pub-dir))
 
 (setq joh/website/base-dir (concat default-directory "org/"))
+(setq joh/website/static-dir (concat default-directory "static/"))
 (setq joh/website/publish-dir (concat default-directory "public_html")) ;; TODO fix the absolute path stuff 
-(setq joh/website/template-dir (concat default-directory "org/templates/"))
+(setq joh/website/template-dir (concat default-directory "templates/"))
 
 (setq org-publish-project-alist
       `(("org-notes"
@@ -51,7 +52,7 @@ inside a script tag, and insert below a map"
 	 :section-numbers nil)
 
 	("org-static"
-	 :base-directory ,joh/website/base-dir
+	 :base-directory ,joh/website/static-dir
 	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
 	 :publishing-directory ,joh/website/publish-dir
 	 :recursive t
