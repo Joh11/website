@@ -7,11 +7,17 @@
     (insert-file-contents path)
     (buffer-string)))
 
+(setq joh/website/base-dir (concat default-directory "org/"))
+(setq joh/website/static-dir (concat default-directory "static/"))
+(setq joh/website/publish-dir (concat default-directory "public_html/")) ;; TODO fix the absolute path stuff 
+(setq joh/website/template-dir (concat default-directory "templates/"))
+
+
 (defun joh/export-block (export-block contents info)
   "If the export block type is gpx, then put the html block
 inside a script tag, and insert below a map"
   (if (string= (org-element-property :type export-block) "GPX")
-      (format (joh/get-string-from-file "templates/map.html")
+      (format (joh/get-string-from-file (concat joh/website/template-dir "map.html"))
 	      (org-remove-indentation (org-element-property :value export-block)))
     ;; If not gpx then delegate to the default html export
     (org-html-export-block export-block contents info)))
@@ -27,10 +33,6 @@ inside a script tag, and insert below a map"
 				      "html"))
 		      plist pub-dir))
 
-(setq joh/website/base-dir (concat default-directory "org/"))
-(setq joh/website/static-dir (concat default-directory "static/"))
-(setq joh/website/publish-dir (concat default-directory "public_html")) ;; TODO fix the absolute path stuff 
-(setq joh/website/template-dir (concat default-directory "templates/"))
 
 (setq org-publish-project-alist
       `(("org-notes"
