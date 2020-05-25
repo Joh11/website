@@ -1,6 +1,8 @@
 (require 'ox-publish)
 (require 'cl)
 
+(setq make-backup-files nil)
+
 ;; Utility function
 (defun joh/get-string-from-file (path)
   "Return PATH's file content as string."
