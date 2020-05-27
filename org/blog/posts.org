@@ -1,3 +1,3 @@
 #+TITLE: All posts
 
-   + [[file:first_post.org][GPX integration and sloppy maps in Org-mode]]
+- [[file:first_post.org][GPX integration and sloppy maps in Org-mode]]
