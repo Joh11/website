@@ -3,7 +3,7 @@
 
 * Motivation
 One of the goal of my personal website will be to keep track and share
-posts of hikes I did. For this, I initially had in mine a simple org
+posts of hikes I did. For this, I initially had in mind a simple org
 file with a few images in it. However, I got really excited about the
 idea of being able to display a sloppy map of the itinerary I
 took. This seemed like a nice little project to level up my Emacs and
@@ -91,11 +91,11 @@ The entire code can be found here:
   </div>
 #+END_SRC
 
-Lets break this down into more understandable pieces. First, the
-exterior div is used to encapsulate everything nicely. Then, the GPX
-data is put inside a <script> tag, with the "text/xml" type, as GPX
-belongs to the XML family. The %s will be useful later, as we're going
-to use the elisp format function to plug the GPX data inside. 
+Let's break this down into more understandable pieces. First, the
+exterior =div= is used to encapsulate everything nicely. Then, the GPX
+data is put inside a =<script>= tag, with the ="text/xml"= type, as
+GPX belongs to the XML family. The =%s= will be useful later, as we're
+going to use the elisp format function to plug the GPX data inside.
 
 The usual way of doing this seem to be using AJAX or similar to load
 the GPX data in a second pass. However, I wanted something simple, and
@@ -110,10 +110,10 @@ case of this is not a dynamic website where users can upload their own
 untrusted GPX files, but rather a simple and hacky static blog where
 the author individually put every GPX file himself. 
 
-The next div tag is the one where the sloppy map is going to be
+The next =div= tag is the one where the sloppy map is going to be
 inserted by Leaflet. An important thing is that its height has to be
-set, either using a style attribute, or putting a snippet like this in
-your CSS files : 
+set, either using a =style= attribute, or putting a snippet like this
+in your CSS files :
 
 #+BEGIN_SRC css
   .map {
@@ -122,11 +122,11 @@ your CSS files :
 #+END_SRC
 
 Finally, the big one, the JavaScript. First, a map is created using
-the L.map constructor. It takes either the id of the map div, or the
-corresponding element object. I wanted to keep the possibility of
-having several maps in a single page so a fixed id could not work, and
-I did not want to bother using gensym everywhere. The map element is
-thus found by navigating in the DOM. 
+the =L.map= constructor. It takes either the =id= of the map =div=, or
+the corresponding element object. I wanted to keep the possibility of
+having several maps in a single page so a fixed =id= could not work,
+and I did not want to bother using gensyms everywhere. The =map=
+element is thus found by navigating in the DOM.
 
 The next two lines are here to load a tile set, and display a scale in
 the bottom left part of the map. 
@@ -138,8 +138,8 @@ centered and scaled accordingly.
 
 ** Lisp, lisp everywhere
 Now the map is fully functional. We just have to integrate it nicely
-in org-mode. To do this, lets understand correctly what does this line
-exactely means: 
+in org-mode. To do this, let's understand correctly what does this
+line exactly means:
 #+BEGIN_SRC org
   ,#+INCLUDE: "parcours.gpx" export gpx
 #+END_SRC
@@ -156,7 +156,7 @@ replace every GPX block with the HTML map template we did earlier. I
 could not find a way to do it with hooks or the exporting filter
 system : we thus have to create another backend from the HTML one, and
 override only the export block function. This is simply done with this
-snippet : 
+snippet :
 #+BEGIN_SRC emacs-lisp
   (org-export-define-derived-backend 'joh/html 'html
     :translate-alist '((export-block . joh/export-block)))
@@ -212,6 +212,6 @@ huge potential of Lisp editing in Emacs ; especially, the jump to
 definition command is perfect to navigate inside the relatively big
 code base of org-mode. 
 
-If you want to see a practical use of this, please visit the [[https://github.com/Joh11/website][git repo]]
-for my website. It is still a heavy WIP but it should be enough to get
-started. 
+If you want to see a practical use of this, please visit the [[https://github.com/Joh11/website][git
+repository]] for my website. It is still a heavy WIP but it should be
+enough to get started.
