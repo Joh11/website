@@ -1,6 +1,14 @@
 #+TITLE: About
 #+STARTUP: showeverything
 
+* About me
+- [[https://www.linkedin.com/in/johan-f%C3%A9lisaz-2b0087159/][LinkedIn]]
+- [[https://github.com/Joh11][GitHub]]
+
+I am a Master Physics student at EPFL (Switzerland). My field of
+expertise is numerical physics and condensed matter, though I have
+interest in many disciplines.
+
 * About this website
 This is my personal website. Here, you should expect to find random
 blog posts about pretty much anything, most likely tech or science, as
@@ -10,10 +18,9 @@ The main goal of this website is to provide me an alternative to
 social networks, completely free and extensible. 
 
 This website has been built with org-mode, you can find the source
-code on github, and a detailed explanation of my (WIP) setup here TODO
-add link. 
-
-* About me
+code on [[https://github.com/Joh11/website][GitHub]], and a detailed explanation of my (WIP) setup (soon
+published).
+# TODO Link to the blog post
 
 * GPG Key
 #+begin_example
