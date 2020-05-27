@@ -1,22 +1,3 @@
 #+TITLE: My static website with org-mode
+#+STARTUP: showeverything
 
-* Introduction
-
-* Goals
-- Having a nice and beautiful static website
-- Use only org-mode to write new posts
-- Ability to show equations
-- Ability to show (and color highlight ?) code
-
-* State of the project
-
-* Test of equations in Mathjax
-Inline equation test : \(i\hbar\frac{\partial \psi}{\partial t} =  \hat H  \psi\)
-And display equation test : 
-
-\begin{equation*}
-i\hbar\frac{\partial \psi}{\partial t} =  \hat H  \psi\
-\end{equation*}
-
-* Test link
-[[file:about.org][This is a link]]
