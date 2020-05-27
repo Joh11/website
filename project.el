@@ -1,6 +1,10 @@
 (require 'ox-publish)
 (require 'cl)
 
+(unless (package-installed-p 'htmlize)
+    (package-refresh-contents)
+    (package-install 'htmlize))
+
 (setq make-backup-files nil)
 
 ;; Utility function
