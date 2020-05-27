@@ -18,9 +18,9 @@ Imagine that you'd only have to type one line in org mode:
 #+END_SRC
 
 To get a nice and shiny map like this :
-#+INCLUDE: "parcours.gpx" export gpx
+#+INCLUDE: "example.gpx" export gpx
 
-This is exactely what I achieved, using the javascript library Leaflet
+This is exactly what I achieved, using the JavaScript library Leaflet
 and the beautiful OpenStreetMap data.
 
 * Setup
@@ -100,7 +100,7 @@ to use the elisp format function to plug the GPX data inside.
 The usual way of doing this seem to be using AJAX or similar to load
 the GPX data in a second pass. However, I wanted something simple, and
 that stayed in the spirit of a static website, with self-contained
-pages (almost, as the Javascript has to be loaded from the Web of
+pages (almost, as the JavaScript has to be loaded from the Web of
 course). 
 
 Another important point, is that here it is assumed that the GPX is
@@ -121,7 +121,7 @@ your CSS files :
   }
 #+END_SRC
 
-Finally, the big one, the javascript. First, a map is created using
+Finally, the big one, the JavaScript. First, a map is created using
 the L.map constructor. It takes either the id of the map div, or the
 corresponding element object. I wanted to keep the possibility of
 having several maps in a single page so a fixed id could not work, and
@@ -162,7 +162,7 @@ snippet :
     :translate-alist '((export-block . joh/export-block)))
 #+END_SRC
 
-Here, joh/export-block is our custom function to transcode export
+Here, =joh/export-block= is our custom function to transcode export
 blocks. It has to expand our map html template if the export type is
 GPX, and delegate to the default export behavior otherwise. 
 
