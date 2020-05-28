@@ -1,0 +1,3 @@
+#+TITLE: The PDA project
+#+DATE: <2020-05-28 jeu.>
+#+DESCRIPTION: Handheld computing before it was cool

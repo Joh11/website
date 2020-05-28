@@ -1,7 +1,3 @@
 #+TITLE: My pictures
 
 * Recent pictures
-
-* A nice map ?
-
-#+INCLUDE: "parcours.gpx" export gpx

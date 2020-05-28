@@ -1,0 +1,3 @@
+#+TITLE: VASP miscellaneous features
+#+DATE: <2020-05-28 jeu.>
+#+DESCRIPTION: A reminder of the most important settings for the record

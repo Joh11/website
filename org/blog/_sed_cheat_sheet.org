@@ -1,0 +1,3 @@
+#+TITLE: Sed cheat sheet
+#+DATE: <2020-05-28 jeu.>
+#+DESCRIPTION: Or how I stopped worrying and enjoyed the code golf
