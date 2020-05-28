@@ -85,12 +85,39 @@ the main directory ; it must then be an empty string. "
 
        ,@extra-options)))
 
+(defun joh/org-publish-sitemap (title list)
+  "Default site map, as a string.
+TITLE is the title of the site map.  LIST is an internal
+representation for the files to include, as returned by
+`org-list-to-lisp'.  PROJECT is the current project."
+  (concat "#+TITLE: " title "\n\n"
+	  "#+HTML: <div id=\"sitemap\">\n"
+	  (org-list-to-org list)
+	  "\n#+HTML: </div>"))
+
+(defun joh/org-publish-sitemap-entry (entry style project)
+  "Modified format for site map ENTRY, as a string.
+ENTRY is a file name.  STYLE is the style of the sitemap.
+PROJECT is the current project."
+  (cond ((not (directory-name-p entry))
+	 (format "[[file:%s][%s]] :: %s"
+		 ;;"[[file:%s][%s]]"
+		 entry
+		 (org-publish-find-title entry project)
+		 (org-publish-find-property entry :description project 'html)))
+	((eq style 'tree)
+	 ;; Return only last subdir.
+	 (file-name-nondirectory (directory-file-name entry)))
+	(t entry)))
+
 (setq org-publish-project-alist
       `(,(joh/org-pages-subproject "")
 	,(joh/org-pages-subproject "blog/"
 				   :auto-sitemap t
 				   :sitemap-title "All posts"
-				   :sitemap-filename "posts.org")
+				   :sitemap-filename "posts.org"
+				   :sitemap-function #'joh/org-publish-sitemap
+				   :sitemap-format-entry #'joh/org-publish-sitemap-entry)
 
 	("org-static"
 	 :base-directory ,joh/website/static-dir

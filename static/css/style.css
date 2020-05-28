@@ -1,53 +1,74 @@
-/* General stuff */
+/* General */
+
 body {
     margin: 0;
-    background-color: #01304F;
-    color: #A1A6AA;
+    font-family: "sans-serif";
 }
 
-#content {
-    margin: 0 auto;
-    max-width: 800px;
+/* Navbar */
+
+#preamble {
+    
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: #FFFFFF;
-}
-
-/* Preamble */
 header {
-    background-color: gray;
-    color: #FFFFFF;
     display: flex;
     justify-content: space-between;
+    background-color: #353844;
     padding: 0.4em 0.7em;
+    font-size: 1.2em;
 }
 
-#navigationTitle {
+header #navigationTitle {
+    color: #FFFFFF;
 }
 
-nav {
-    align-self: flex-end
+header nav {
+    align-self: flex-end;
 }
 
-nav ul {
+header nav ul {
     margin: 0;
-    width: 100%;
     display: flex;
 }
 
-nav ul li {
+header nav ul li {
     display: inline;
-    margin: 0;
-    padding: 0em 0.5em;
-    list-style-type: none;
+    padding: 0 0.5em;
 }
 
-nav > ul > li > a {
-    color: #FFFFFF;
+header nav ul li a {
+    color: #AAADA9;
     text-decoration: none;
 }
 
+/* aaada9 */
+
+/* Content */
+#content {
+    margin: 0 auto;
+    max-width: 1000px;
+}
+
+/* Site map */
+#sitemap dd {
+    color: #aaada9;
+    font-style: italic;
+    margin-left: 0.5em;
+    margin-bottom: 1.4em;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 0.3em;
+}
+
+#sitemap a {
+    color: #e16161;
+    font-size: 1.3em;
+    text-decoration: none;
+}
+
+/* Leaflet stuff */
 .map {
-    height: 800px
+    height: 600px;
+    width: 800px;
+    margin: 0 auto;
 }

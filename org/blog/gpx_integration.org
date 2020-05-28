@@ -1,5 +1,7 @@
 #+TITLE: GPX integration and sloppy maps in Org-mode
 #+DATE: <2020-04-22 mer.>
+#+DESCRIPTION: Or how to display beautiful maps in your HTML exported org files
+
 
 * Motivation
 One of the goal of my personal website will be to keep track and share
@@ -176,7 +178,7 @@ GPX, and delegate to the default export behavior otherwise.
       (org-html-export-block export-block contents info)))
 #+END_SRC
 
-The joh/get-string-from file (see definition below) function is used
+The =joh/get-string-from= file (see definition below) function is used
 to load the HTML template as string. It goes through the format
 function, to expand the %s with the GPX data. 
 
