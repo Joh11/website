@@ -168,8 +168,6 @@ out_Color = vec4(pass_Color, 1.0);
 
 
 (defun render ()
-  (gl:clear :color-buffer)
-
   (gl:clear :color-buffer-bit :depth-buffer-bit :stencil-buffer-bit)
 
   (with-shader *shader*
