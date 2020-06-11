@@ -1,6 +1,6 @@
 #+TITLE: Common Lisp : How to use VAO and shaders with cl-sdl2 and cl-opengl
 #+DATE: <2020-06-11 jeu.>
-#+DESCRIPTION: Or how to display beautiful maps in your HTML exported org files
+#+DESCRIPTION: 
 
 * Motivation
 As it is a niche subject, it is quite difficult to find resources on
