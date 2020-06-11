@@ -1,0 +1,223 @@
+#+TITLE: Common Lisp : How to use VAO and shaders with cl-sdl2 and cl-opengl
+#+DATE: <2020-06-11 jeu.>
+#+DESCRIPTION: Or how to display beautiful maps in your HTML exported org files
+
+* Motivation
+As it is a niche subject, it is quite difficult to find resources on
+the Web to make it work. I struggled myself quite a lot, even though
+[[https://common-lisp.net/project/cl-opengl/][cl-opengl]] has a few [[https://github.com/3b/cl-opengl/tree/master/examples][examples]]. However, these are using GLFW, and I
+somehow could not make it work with [[https://github.com/lispgames/cl-sdl2][cl-sdl2]] starting from them.
+
+* Snippet
+It can also be found as a gist [[https://gist.github.com/Joh11/c8414279f355ed6685d6d57ef1484b17][here]]. 
+
+The code should be self explanatory, with previous OpenGL and Common
+Lisp experience. Please feel free to contact me for any question or
+remarks.
+
+#+begin_src common-lisp
+;;; An example of how to use Vertex Array Objects (VAO) and shaders
+;;; with cl-sdl2.
+
+;; MIT License
+
+;; Copyright (c) 2020 Johan Félisaz
+
+;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;; of this software and associated documentation files (the "Software"), to deal
+;; in the Software without restriction, including without limitation the rights
+;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;; copies of the Software, and to permit persons to whom the Software is
+;; furnished to do so, subject to the following conditions:
+
+;; The above copyright notice and this permission notice shall be included in all
+;; copies or substantial portions of the Software.
+
+;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+;; SOFTWARE.
+
+(ql:quickload :sdl2)
+(ql:quickload :cl-opengl)
+
+;;;; A few utility functions
+;;;; -----------------------
+
+(defun unbind-buffer (target)
+  "Unbind the given TARGET buffer. This amounts to binding it to the 0
+buffer."
+  (gl:bind-buffer target 0))
+
+(defun unbind-vertex-array ()
+  "Unbind the vertex array. This amounts to binding it to the 0
+array."
+  (gl:bind-vertex-array 0))
+
+(defun send-buffer-data (target usage arr &key buffer (type :float))
+  "Copy the given ARR array into a GL-ARRAY, and load this array
+inside the active buffer, with given TARGET and USAGE. When BUFFER is
+given, binds it first (with the same TARGET), and unbinds it after. "
+  (when buffer
+    (gl:bind-buffer target buffer))
+  
+  (let* ((n (length arr))
+	 (glarr (gl:alloc-gl-array type n)))
+    (dotimes (i n)
+      (setf (gl:glaref glarr i) (aref arr i)))
+    (gl:buffer-data target usage glarr)
+    (gl:free-gl-array glarr))
+  
+  (when buffer
+    (unbind-buffer target)))
+
+;;; Shader helper functions
+
+(defmethod bind-shader (shader)
+  (gl:use-program shader))
+
+(defun unbind-shader ()
+  (gl:use-program 0))
+
+(defmacro with-shader (shader &body body)
+  `(prog2
+       (bind-shader ,shader)
+       (progn ,@body)
+     (unbind-shader)))
+
+(defun compile-shaders-get-program (vertex-src fragment-src)
+  (let ((vertex-shader (gl:create-shader :vertex-shader))
+	(fragment-shader (gl:create-shader :fragment-shader))
+	(program (gl:create-program)))
+
+    ;; Compile vertex shader
+    (gl:shader-source vertex-shader vertex-src)
+    (gl:compile-shader vertex-shader)
+    
+    ;; Compile fragment shader
+    (gl:shader-source fragment-shader fragment-src)
+    (gl:compile-shader fragment-shader)
+
+    ;; Attach and link
+    (gl:attach-shader program vertex-shader)
+    (gl:attach-shader program fragment-shader)
+    (gl:link-program program)
+
+    (values program
+	    vertex-shader
+	    fragment-shader)))
+
+;;;; SDL2 stuff
+;;;; ----------
+
+(defun main ()
+  (sdl2:with-init (:everything)
+    (sdl2:with-window (win :flags '(:shown :opengl))
+      (sdl2:with-gl-context (gl-context win)
+	;; Basic window / gl setup
+	(setup-gl win gl-context)
+	;; Run main loop
+	(sdl2:with-event-loop (:method :poll)
+	  (:idle ()
+		 (render)
+		 ;; Swap back buffer
+		 (sdl2:gl-swap-window win))
+	  (:quit () t))))))
+
+;;;; OpenGL stuff
+;;;; ------------
+
+(defparameter *vao-id* nil "index of the vextex array object")
+(defparameter *vbo-ids* nil "indices of the vertex buffer objects (list of 2 elements for the position and color)")
+(defparameter *shader* nil "index of the shader program")
+
+(defun setup-gl (win gl-context)
+  (sdl2:gl-make-current win gl-context)
+  (gl:viewport 0 0 800 600)
+  (gl:matrix-mode :projection)
+  (gl:matrix-mode :modelview)
+  (gl:load-identity)
+  ;; Clear to black
+  (gl:clear-color 0.0 0.0 0.0 1.0)
+  ;; Create our square
+  (create-square)
+
+  (gl:clear-color 0.4 0.6 0.9 0.0)
+  (setf *shader* (compile-shaders-get-program
+		  "#version 330 core
+layout(location = 0) in vec3 in_Position;
+layout(location = 1) in vec3 in_Color;
+out vec3 pass_Color;
+
+void main(void)
+{
+gl_Position = vec4(in_Position, 1.0);
+pass_Color = in_Color;
+}"
+		  "#version 330 core
+in vec3 pass_Color;
+out vec4 out_Color;
+
+void main(void)
+{
+out_Color = vec4(pass_Color, 1.0);
+}")))
+
+
+(defun render ()
+  (gl:clear :color-buffer)
+
+  (gl:clear :color-buffer-bit :depth-buffer-bit :stencil-buffer-bit)
+
+  (with-shader *shader*
+    (gl:bind-vertex-array *vao-id*)
+    (gl:draw-arrays :triangles 0 6)
+    (unbind-vertex-array))
+  
+  (gl:flush))
+
+
+
+(defun create-square ()
+  "Method for creating our squares Vertex Array Object"
+  (let ((vertices #(-0.5 -0.5 0.0
+		    -0.5 0.5 0.0
+		    0.5 0.5 0.0
+		    
+		    0.5 -0.5 0.0
+		    -0.5 -0.5 0.0
+		    0.5 0.5 0.0))
+	(colors #(1.0 1.0 1.0
+		  1.0 0.0 0.0
+		  0.0 1.0 0.0
+		  
+		  0.0 0.0 1.0
+		  1.0 1.0 1.0
+		  0.0 1.0 0.0)))
+    (setf *vao-id* (gl:gen-vertex-array))
+    (gl:bind-vertex-array *vao-id*)
+
+    (setf *vbo-ids* (gl:gen-buffers 2))
+    ;; Vertices
+    (gl:bind-buffer :array-buffer (first *vbo-ids*))
+    (send-buffer-data :array-buffer :static-draw vertices)
+
+    (gl:vertex-attrib-pointer 0 3 :float :false 0 0)
+    (gl:enable-vertex-attrib-array 0)
+
+    ;; Colors
+    (gl:bind-buffer :array-buffer (second *vbo-ids*))
+    (send-buffer-data :array-buffer :static-draw colors)
+
+    (gl:vertex-attrib-pointer 1 3 :float :false 0 0)
+    (gl:enable-vertex-attrib-array 1)
+    
+    (unbind-vertex-array)))
+
+;;;; Run the snippet
+
+(main)
+#+end_src
