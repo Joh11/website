@@ -1,0 +1,137 @@
+#+TITLE: Simple and fast HTTP server in Common Lisp with Woo
+#+DATE: <2020-07-29 mer.>
+#+DESCRIPTION: 
+
+* Motivation
+** TODO ajouter lien hunchentoot
+For various tinkering projects of my own, I wanted a simple web server
+capable of handling basic HTTP requests. Apparently the classical
+solution regarding HTTP servers in CL is Hunchentoot. However, this
+seemed like a complicated library to use just for a basic server, and
+I was not comfortable with some design choices (global variables ? I
+may be wrong here, I did not look at the documentation enough).
+
+** TODO ajouter lien awesome-cl and woo
+Fortunately, the awesome-cl list of libraries for Common Lisp pointed
+me to an alternative : Woo. It was claiming to be the fastest HTTP
+server and it seemed simple : I was in. However, there was a catch :
+no resource could be found on Internet, and the source code was not
+even documented.
+
+You will find here, for the record, the results of my tinkering with
+Woo's source. What I will be showing here may not be the correct way
+of using Woo, but this is the best we have for now.
+
+* Installation
+It is simply done using Quicklisp: 
+#+begin_src common-lisp
+  (ql:quickload :woo)
+#+end_src
+
+However, it also requires the =libev= library, that can be installed
+the usual way on Debian-like systems:
+#+begin_src bash
+  apt install libev-dev
+#+end_src
+
+* Running the server
+** Starting the server
+This code is directly taken from the README (the only code snippet
+found on the Web):
+#+begin_src common-lisp
+  (woo:run
+     (lambda (env)
+       '(200 (:content-type "text/plain") ("Hello, World"))))
+#+end_src
+
+Now the Hello world page is reachable at the address
+[[http://127.0.0.1:5000]] (default host and port ; they can be changed as
+=&key= arguments of =woo:run=).
+
+** Stopping the server
+From the README again: 
+#+begin_quote
+When the master process gets these signals, it kills worker processes and quits afterwards.
+- QUIT: graceful shutdown, waits for all requests are finished.
+- INT/TERM: shutdown immediately.
+#+end_quote
+
+However, this is rather obscure without much knowledge of POSIX
+signals. Practically, it means that the server can be stopped by
+hitting C-c C-c inside the slime REPL, or just C-c in a command line
+REPL (Emacs captures the first C-c for various keystrokes hence the
+repetition).
+
+This also works if the server was started in another thread, i.e.: 
+#+begin_src common-lisp
+  (bordeaux-threads:make-thread (lambda ()
+				  (woo:run
+				   (lambda (env)
+				     '(200 (:content-type "text/plain") ("Hello, World"))))))
+#+end_src
+
+*** Shutting down the server using the =kill= command
+This other method could be useful if you are actually running the
+server remotely, and do not have access to a REPL (but a terminal via
+SSH for example).
+
+First one has to find the /process ID/ (PID) of the Lisp image (in this case, SBCL):
+#+begin_src bash
+  $ ps -eF | grep sbcl
+  johan    16693 27647  0 320308 136676 6 13:50 ?        00:00:05 /usr/bin/sbcl
+#+end_src
+
+The first number (16693) is the PID of sbcl. It is now possible to
+send a SIGQUIT signal to it, to close the server nicely:
+#+begin_src common-lisp
+  kill -3 16693
+#+end_src
+
+This should not kill sbcl, only shut down the server. 
+
+* The =env= request object
+=env= is a parameter representing the incoming request that the server
+has to handle. It is a plist, that is a list of the form =(key1 value1
+key2 value2 ...)= emulating a dictionary. Most of its content should
+be explanatory (i.e. =:request-method= or =:server-port=). The only
+non trivial part is the body of the request, stored under the key
+=:raw-body=, as a =vector-input-stream= from the flexi-streams
+library.
+
+In particular, for a POST request like sent by this curl command:
+#+begin_src bash
+  curl -d "param1=value1&param2=value2" -X POST http://localhost:5000
+#+end_src
+the string ="param1=value1&param2=value2"= can be retrieve on the server side using:
+#+begin_src common-lisp
+  (flexi-streams:octets-to-string (flexi-streams::vector-stream-vector (getf env :raw-body)))
+#+end_src
+
+There may be a better way to retrieve the octet array from the stream
+using a read like function instead of this internal accessor
+=vector-stream-vector=. However this works well enough.
+
+* The response request
+After handling the incoming request, our function must return another
+HTTP request represented by a list, like =(200 (:content-type
+"text/plain") ("Hello, World"))=.
+
+The first element is the [[https://en.wikipedia.org/wiki/List_of_HTTP_status_codes][HTTP status code]]: it should be 200 if
+everything is OK, 404 for a page not found and so on.
+
+The second corresponds to the HTTP header. 
+
+The third argument will be the body of the response itself. Depending
+on its type, Woo treats it differently:
+- if it is a list of strings (like =("<h1>Title</h1>" "<p>Hi!</p>")=),
+  it will concatenate them and send them as is;
+- if it is a pathname (like =#p"index.html"=), it sends the according
+  file.
+
+* Conclusion
+I hope this was enough to get you started. Woo is a beautiful gem of
+simplicity and speed, yet the absence of documentation makes it quite
+tough to grasp at first.
+
+If you want examples of Woo in action, stay tune on my Github, I may
+release a project using it soon :)
