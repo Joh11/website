@@ -3,4 +3,5 @@
 #+HTML: <div id="sitemap">
 - [[file:cl-vao-sdl.org][Common Lisp : How to use VAO and shaders with cl-sdl2 and cl-opengl]] :: 
 - [[file:gpx_integration.org][GPX integration and sloppy maps in Org-mode]] :: Or how to display beautiful maps in your HTML exported org files
+- [[file:woo-beginner-guide.org][Simple and fast HTTP server in Common Lisp with Woo]] :: 
 #+HTML: </div>
