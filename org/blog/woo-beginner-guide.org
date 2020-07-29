@@ -3,16 +3,14 @@
 #+DESCRIPTION: 
 
 * Motivation
-** TODO ajouter lien hunchentoot
 For various tinkering projects of my own, I wanted a simple web server
 capable of handling basic HTTP requests. Apparently the classical
-solution regarding HTTP servers in CL is Hunchentoot. However, this
+solution regarding HTTP servers in CL is [[https://edicl.github.io/hunchentoot/][Hunchentoot]]. However, this
 seemed like a complicated library to use just for a basic server, and
 I was not comfortable with some design choices (global variables ? I
 may be wrong here, I did not look at the documentation enough).
 
-** TODO ajouter lien awesome-cl and woo
-Fortunately, the awesome-cl list of libraries for Common Lisp pointed
+Fortunately, the [[https://github.com/CodyReichert/awesome-cl#network-and-internet][awesome-cl]] list of libraries for Common Lisp pointed
 me to an alternative : Woo. It was claiming to be the fastest HTTP
 server and it seemed simple : I was in. However, there was a catch :
 no resource could be found on Internet, and the source code was not
