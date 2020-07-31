@@ -1,0 +1,27 @@
+#+TITLE: SLIME : displaying quicklisp local-projects
+#+DATE: <2020-07-31 ven.>
+#+DESCRIPTION: 
+
+* Problem
+In the SLIME REPL, whenever the =,load-system= command is used, the
+ASDF systems located in the =~/quicklisp/local-projects/= directory
+are not displaid in the auto-completion list. However, they are indeed
+there, as typing their full name loads them perfectly. 
+
+This is due to the fact that to register these systems, Quicklisp uses
+the =asdf:*system-definition-search-functions*= mechanism, which
+locates the systems as it is asked, and is thus unable to output a
+list of available systems.
+
+* Solution
+Fortunately, the fix for this is easy: use another method to register
+the local-projects directory, that is using the source registry (see
+the related [[https://common-lisp.net/project/asdf/asdf.html#Configuring-ASDF][ASDF manual page]]). 
+
+To do so, create a file
+=~/.config/common-lisp/source-registry.conf.d/quicklisp-local-projects.conf=
+with the following content:
+#+begin_src lisp
+  (:tree "~/quicklisp/local-projects/")
+#+end_src
+
