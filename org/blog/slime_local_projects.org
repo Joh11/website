@@ -1,11 +1,11 @@
-#+TITLE: SLIME : displaying quicklisp local-projects
+#+TITLE: SLIME : displaying Quicklisp local-projects
 #+DATE: <2020-07-31 ven.>
 #+DESCRIPTION: 
 
 * Problem
 In the SLIME REPL, whenever the =,load-system= command is used, the
 ASDF systems located in the =~/quicklisp/local-projects/= directory
-are not displaid in the auto-completion list. However, they are indeed
+are not displayed in the auto-completion list. However, they are indeed
 there, as typing their full name loads them perfectly. 
 
 This is due to the fact that to register these systems, Quicklisp uses
